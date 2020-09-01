@@ -30,9 +30,9 @@ export class AppComponent {
     items: MenuItem[];
     activeItem: MenuItem;
     cols: any[];
-    ridersTour: IRiders[];
-    ridersParis: IRiders[];
+    riders: IRiders[];
     ridersCount: IRidersCount = { tourRiders: 0, parisRiders: 0 } as IRidersCount;
+    enumTab = Tab;
 
     constructor(
         public messageService: MessageService,
@@ -50,8 +50,9 @@ export class AppComponent {
 
     initSocketAndLoadData() {
         this.socketService.start().then(() => {
-            this.loadTourRiders()
+            this.loadTourRiders();
 
+            // subscribe for socket update
             this.socketService.getRiderCountUpdate().subscribe(
                 (res: IRidersCount) => {
                     this.ridersCount = res;
@@ -59,15 +60,10 @@ export class AppComponent {
                 }
             );
 
+            // subscribe for socket update
             this.socketService.getUpdateList().subscribe(
                 () => {
-                    this.messageService.add({ severity: 'info', summary: 'New Data', detail: 'The rider board has been updated. Refreshing riders...' });
-
-                    if (this.activeItem.id == Tab.Tour.toString()) {
-                        this.loadTourRiders();
-                    } else {
-                        this.loadParisRiders();
-                    }
+                    this.messageService.add({key: 'newData', severity: 'info', summary: 'New Data', detail: 'The rider board has been updated. Do you want to refresh your list?' });
                 }
             );
         });
@@ -75,7 +71,7 @@ export class AppComponent {
 
     loadTourRiders() {
         this.riderService.getTourRiders().then((response) => {
-            this.ridersTour = response as IRiders[];
+            this.riders = response as IRiders[];
             this.socketService.leaveGroup(Tab.Paris);
             this.socketService.joinGroup(Tab.Tour);
         })
@@ -86,7 +82,7 @@ export class AppComponent {
 
     loadParisRiders() {
         this.riderService.getParisRiders().then((response) => {
-            this.ridersParis = response as IRiders[];
+            this.riders = response as IRiders[];
             this.socketService.leaveGroup(Tab.Tour);
             this.socketService.joinGroup(Tab.Paris);
         })
@@ -97,7 +93,7 @@ export class AppComponent {
 
     tourClick() {
         this.riderService.addTourRiders().then((response) => {
-            this.ridersTour = response as IRiders[];
+            this.riders = response as IRiders[];
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'New rider add for Tour de France' });
             this.socketService.broadcastRiderCountUpdate();
             this.socketService.alertGroupListUpdated(Tab.Tour);
@@ -109,7 +105,7 @@ export class AppComponent {
 
     parisClick() {
         this.riderService.addParisRiders().then((response) => {
-            this.ridersParis = response as IRiders[];
+            this.riders = response as IRiders[];
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'New rider add for Paris Roubaix' });
             this.socketService.broadcastRiderCountUpdate();
             this.socketService.alertGroupListUpdated(Tab.Paris);
@@ -136,5 +132,19 @@ export class AppComponent {
             { field: 'age', header: 'Age' },
             { field: 'team', header: 'Team' }
         ];
+    }
+
+    // When the user clicks on the refresh yes button
+    onConfirmRefresh() {
+        if (this.activeItem.id == Tab.Tour.toString()) {
+            this.loadTourRiders();
+        } else {
+            this.loadParisRiders();
+        }
+        this.onReject();
+    }
+
+    onReject() {
+        this.messageService.clear('newData'); 
     }
 }
