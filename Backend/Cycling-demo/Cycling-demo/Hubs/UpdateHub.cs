@@ -1,23 +1,25 @@
 ﻿using Cycling_demo.Data;
+using Cycling_demo.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Cycling_demo.Hubs
 {
-	public class ridersCount
+	// Enkel nodig in deze class
+	internal enum SignalRMethod
 	{
-		public int TourRiders { get; set; }
-		public int ParisRiders { get; set; }
+		[Display(Name = "updateRiderCount")]
+		UpdateRiderCount = 1,
 
-		public ridersCount(int tourRiders, int parisRiders)
-		{
-			this.TourRiders = tourRiders;
-			this.ParisRiders = parisRiders;
-		}
+		[Display(Name = "ListUpdated")]
+		ListUpdated = 2
 	}
+
 	public class UpdateHub : Hub
 	{
 		private readonly IRidersDB _ridersDB;
@@ -27,21 +29,23 @@ namespace Cycling_demo.Hubs
 			_ridersDB = ridersDB;
 		}
 
+		// Custom methods
 		public async Task OnConnect()
 		{
-			await Clients.Client(Context.ConnectionId).SendAsync("updateRiderCount", new ridersCount(_ridersDB.GetTourRiders().Count(), _ridersDB.GetParisRiders().Count()));
+			await Clients.Client(Context.ConnectionId).SendAsync(SignalRMethod.UpdateRiderCount.GetDisplayName(), new RidersCount(_ridersDB.GetTourRiders().Count(), _ridersDB.GetParisRiders().Count()));
 		}
 
 		public async Task UpdateRiderCount()
 		{
-			await Clients.All.SendAsync("updateRiderCount", new ridersCount(_ridersDB.GetTourRiders().Count(), _ridersDB.GetParisRiders().Count()));
+			await Clients.All.SendAsync(SignalRMethod.UpdateRiderCount.GetDisplayName(), new RidersCount(_ridersDB.GetTourRiders().Count(), _ridersDB.GetParisRiders().Count()));
 		}
 
 		public async Task alertGroupListUpdated(string tab)
 		{
-			await Clients.GroupExcept(tab, Context.ConnectionId).SendAsync("listUpdated");
+			await Clients.GroupExcept(tab, Context.ConnectionId).SendAsync(SignalRMethod.ListUpdated.GetDisplayName());
 		}
 
+		// Join Group and Leave Group
 		public async Task joinGroup(string tab)
 		{
 			await Groups.AddToGroupAsync(Context.ConnectionId, tab);

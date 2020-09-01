@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace Cycling_demo
 {
@@ -34,6 +35,11 @@ namespace Cycling_demo
 			services.AddSignalR(s =>
 			{
 				s.EnableDetailedErrors = true;
+			});
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("apiDocumentation", new OpenApiInfo { Title = "Cycling-demo API", Version = "Version 1.0" });
 			});
 
 			services.AddCors(options => options.AddPolicy("CorsPolicy",
@@ -63,10 +69,17 @@ namespace Cycling_demo
 
 			app.UseCors("CorsPolicy");
 
+			app.UseSwagger();
+
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
 				endpoints.MapHub<UpdateHub>("/updatesocket");
+			});
+
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/apiDocumentation/swagger.json", "Cycling-demo API");
 			});
 		}
 	}

@@ -15,12 +15,10 @@ namespace Cycling_demo.Controllers
 	public class RidersController : Controller
 	{
 		private readonly IRidersDB _ridersDB;
-		private readonly IHubContext<UpdateHub> _hubContext;
 
-		public RidersController(IRidersDB ridersDB, IHubContext<UpdateHub> hubContext)
+		public RidersController(IRidersDB ridersDB)
 		{
 			_ridersDB = ridersDB;
-			_hubContext = hubContext;
 		}
 
 		[HttpGet]
