@@ -38,7 +38,6 @@ export class AppComponent {
 
     ngOnInit() {
         this.updateMenu();
-        this.activeItem = this.items[0];
 
         this.setCols();
         this.initSocketAndLoadData();
@@ -114,10 +113,13 @@ export class AppComponent {
     }
 
     updateMenu() {
+        let prev = this.activeItem;
         this.items = [
-            { id: 'tour', label: `Tour de France ${this.ridersCount.tourRiders}`, icon: 'pi pi-fw pi-home', command: (event) => { this.activeItem = this.items[0]; this.loadTourRiders() } },
+            { id: 'tour', label: `Tour de France ${this.ridersCount.tourRiders}`, icon: 'pi pi-fw pi-home', command: (event) => { this.activeItem = this.items[0] ; this.loadTourRiders() } },
             { id: 'paris', label: `Paris Roubaix ${this.ridersCount.parisRiders}`, icon: 'pi pi-fw pi-calendar', command: (event) => { this.activeItem = this.items[1]; this.loadParisRiders() } }
         ];
+        this.activeItem = prev ? this.items.find(x => x.id == prev.id) : this.items[0];
+        console.log(this.activeItem);
     }
 
     setCols() {
