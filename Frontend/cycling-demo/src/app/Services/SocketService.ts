@@ -44,15 +44,15 @@ export class SocketService {
         this.connection.invoke("updateRiderCount").catch(err => console.error(err));
     }
 
-    public joinGroup(tab: string) {
+    public joinGroup(tab: number) {
         this.connection.invoke("joinGroup", tab).catch(err => console.error(err));
     }
 
-    public leaveGroup(tab: string) {
+    public leaveGroup(tab: number) {
         this.connection.invoke("leaveGroup", tab).catch(err => console.error(err));
     }
 
-    public alertGroupListUpdated(tab: string) {
+    public alertGroupListUpdated(tab: number) {
         this.connection.invoke("alertGroupListUpdated", tab).catch(err => console.error(err));
     }
 

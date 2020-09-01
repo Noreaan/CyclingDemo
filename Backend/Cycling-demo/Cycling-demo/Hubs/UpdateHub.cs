@@ -20,6 +20,12 @@ namespace Cycling_demo.Hubs
 		ListUpdated = 2
 	}
 
+	public enum Tab
+	{
+		Tour = 1,
+		Paris = 2
+	}
+
 	public class UpdateHub : Hub
 	{
 		private readonly IRidersDB _ridersDB;
@@ -40,19 +46,19 @@ namespace Cycling_demo.Hubs
 			await Clients.All.SendAsync(SignalRMethod.UpdateRiderCount.GetDisplayName(), new RidersCount(_ridersDB.GetTourRiders().Count(), _ridersDB.GetParisRiders().Count()));
 		}
 
-		public async Task alertGroupListUpdated(string tab)
+		public async Task AlertGroupListUpdated(Tab tab)
 		{
-			await Clients.GroupExcept(tab, Context.ConnectionId).SendAsync(SignalRMethod.ListUpdated.GetDisplayName());
+			await Clients.GroupExcept(tab.GetDisplayName(), Context.ConnectionId).SendAsync(SignalRMethod.ListUpdated.GetDisplayName());
 		}
 
 		// Join Group and Leave Group
-		public async Task joinGroup(string tab)
+		public async Task JoinGroup(Tab tab)
 		{
-			await Groups.AddToGroupAsync(Context.ConnectionId, tab);
+			await Groups.AddToGroupAsync(Context.ConnectionId, tab.GetDisplayName());
 		}
-		public async Task leaveGroup(string tab)
+		public async Task LeaveGroup(Tab tab)
 		{
-			await Groups.RemoveFromGroupAsync(Context.ConnectionId, tab);
+			await Groups.RemoveFromGroupAsync(Context.ConnectionId, tab.GetDisplayName());
 		}
 	}
 }
