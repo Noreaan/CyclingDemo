@@ -48,6 +48,10 @@ export class SocketService {
         this.connection.invoke("joinGroup", tab).catch(err => console.error(err));
     }
 
+    public leaveGroup(tab: string) {
+        this.connection.invoke("leaveGroup", tab).catch(err => console.error(err));
+    }
+
     public alertGroupListUpdated(tab: string) {
         this.connection.invoke("alertGroupListUpdated", tab).catch(err => console.error(err));
     }

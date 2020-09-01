@@ -44,7 +44,11 @@ namespace Cycling_demo.Hubs
 
 		public async Task joinGroup(string tab)
 		{
-			await Groups.AddToGroupAsync(Context.ConnectionId, tab); 
+			await Groups.AddToGroupAsync(Context.ConnectionId, tab);
+		}
+		public async Task leaveGroup(string tab)
+		{
+			await Groups.RemoveFromGroupAsync(Context.ConnectionId, tab);
 		}
 	}
 }

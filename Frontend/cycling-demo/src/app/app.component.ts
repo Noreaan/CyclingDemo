@@ -71,6 +71,7 @@ export class AppComponent {
     loadTourRiders() {
         this.riderService.getTourRiders().then((response) => {
             this.ridersTour = response as IRiders[];
+            this.socketService.leaveGroup('paris');
             this.socketService.joinGroup('tour');
         })
             .catch(() => {
@@ -81,6 +82,7 @@ export class AppComponent {
     loadParisRiders() {
         this.riderService.getParisRiders().then((response) => {
             this.ridersParis = response as IRiders[];
+            this.socketService.leaveGroup('tour');
             this.socketService.joinGroup('paris');
         })
             .catch(() => {
@@ -93,7 +95,7 @@ export class AppComponent {
             this.ridersTour = response as IRiders[];
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'New rider add for Tour de France' });
             this.socketService.broadcastRiderCountUpdate();
-            this.socketService.alertGroupListUpdated(this.activeItem.id);
+            this.socketService.alertGroupListUpdated('tour');
         })
             .catch(() => {
                 this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Could not add rider for Tour de France' });
@@ -105,7 +107,7 @@ export class AppComponent {
             this.ridersParis = response as IRiders[];
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'New rider add for Paris Roubaix' });
             this.socketService.broadcastRiderCountUpdate();
-            this.socketService.alertGroupListUpdated(this.activeItem.id);
+            this.socketService.alertGroupListUpdated('paris');
         })
             .catch(() => {
                 this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Could not add rider for Paris Roubaix' });
@@ -115,7 +117,7 @@ export class AppComponent {
     updateMenu() {
         let prev = this.activeItem;
         this.items = [
-            { id: 'tour', label: `Tour de France ${this.ridersCount.tourRiders}`, icon: 'pi pi-fw pi-home', command: (event) => { this.activeItem = this.items[0] ; this.loadTourRiders() } },
+            { id: 'tour', label: `Tour de France ${this.ridersCount.tourRiders}`, icon: 'pi pi-fw pi-home', command: (event) => { this.activeItem = this.items[0];  this.loadTourRiders() } },
             { id: 'paris', label: `Paris Roubaix ${this.ridersCount.parisRiders}`, icon: 'pi pi-fw pi-calendar', command: (event) => { this.activeItem = this.items[1]; this.loadParisRiders() } }
         ];
         this.activeItem = prev ? this.items.find(x => x.id == prev.id) : this.items[0];
