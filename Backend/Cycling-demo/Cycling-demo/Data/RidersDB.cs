@@ -39,7 +39,11 @@ namespace Cycling_demo.Data
 			new Rider("Hector", "Carretero", "31", "Movistar"),
 			new Rider("Greg", "Van Avermaet", "35", "CCC"),
 			new Rider("Rafał", "Majka", "30", "Bora Hansgrohe"),
-			new Rider("Michał", "Kwiatkowski", "30", "Ineos")
+			new Rider("Michał", "Kwiatkowski", "30", "Ineos"),
+			new Rider("Rui", "Costa", "30", "nvt"),
+			new Rider("Simon", "Gerrans", "30", "nvt"),
+			new Rider("Matti", "Breschel", "30", "nvt"),
+			new Rider("Cadel", "Evans", "30", "nvt")
 		};
 
 		public RidersDB()
